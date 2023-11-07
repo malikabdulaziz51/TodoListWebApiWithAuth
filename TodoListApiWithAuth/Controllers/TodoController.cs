@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Razor.Tokenizer.Symbols;
 using TodoListApiWithAuth.AppDbContext;
 using TodoListApiWithAuth.Custom.Error;
 using TodoListApiWithAuth.Models;
@@ -22,19 +23,20 @@ namespace TodoListApiWithAuth.Controllers
 
         [HttpGet, AllowAnonymous]
         [Route("api/todo/search")]
-        public IHttpActionResult Search(string keyword) 
+        public IHttpActionResult Search(string title = null, bool? isDone = null) 
         {
-            if (string.IsNullOrEmpty(keyword))
+            var result = _todoRepository.GetAll();
+            if (!string.IsNullOrEmpty(title))
             {
-                return Ok(_todoRepository.GetAll());
+                result = result
+                .Where(i => i.Title.Contains(title))
+                .ToList();
             }
-
-            var result = _todoRepository
-                        .GetAll()
-                        .Where(i => i.Title.Contains(keyword) || i.Description.Contains(keyword))
-                        .ToList();
-
-            if(result.Count == 0)
+            if (isDone.HasValue) 
+            {
+                result = result.Where(x => x.IsDone == isDone.Value).ToList();
+            }
+            if (result.Count() == 0)
             {
                 return NotFound();
             }

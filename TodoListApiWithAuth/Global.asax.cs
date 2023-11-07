@@ -9,6 +9,8 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using Microsoft.Owin.Host.SystemWeb;
+using AutoMapper;
+using TodoListApiWithAuth.AutoMapper;
 
 namespace TodoListApiWithAuth
 {
@@ -16,6 +18,7 @@ namespace TodoListApiWithAuth
     {
         protected void Application_Start()
         {
+            Mapper.Initialize(c => c.AddProfile<UserMapper>());
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
